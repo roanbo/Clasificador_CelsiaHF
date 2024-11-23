@@ -1,16 +1,18 @@
 import unittest
-from src.main import HuggingFaceModel, process_file
+from src.main import HuggingFaceModel, TextValidator, CSVProcessor
 import tempfile
 import pandas as pd
 
+
 class TestHuggingFaceModel(unittest.TestCase):
     def setUp(self):
-        """Configura una instancia del modelo para usar en las pruebas."""
-        self.model = HuggingFaceModel()
+        """Configura una instancia del modelo con un validador para usar en las pruebas."""
+        self.validator = TextValidator()
+        self.model = HuggingFaceModel(validator=self.validator)
 
     def test_predict_valid_text(self):
         """Prueba que el modelo predice correctamente etiquetas válidas."""
-        text = "un arbol corto las cuerdas"
+        text = "un árbol cortó las cuerdas"
         prediction = self.model.predict(text)
         self.assertIsInstance(prediction, str)  # La salida debe ser un string
         self.assertIn(prediction, ["ejecutar", "cancelar"])  # Validar etiquetas
@@ -28,9 +30,14 @@ class TestHuggingFaceModel(unittest.TestCase):
         prediction = self.model.predict(text)
         self.assertEqual(prediction, "Entrada inválida. Por favor, ingrese un texto coherente.")
 
-class TestProcessFile(unittest.TestCase):
+
+class TestCSVProcessor(unittest.TestCase):
     def setUp(self):
-        """Crea un archivo temporal para pruebas de procesamiento."""
+        """Crea un archivo temporal y una instancia del procesador para pruebas."""
+        self.validator = TextValidator()
+        self.model = HuggingFaceModel(validator=self.validator)
+        self.processor = CSVProcessor(model=self.model)
+
         self.test_data = pd.DataFrame({"daño": ["un árbol cortó las cuerdas", "no hay energía"]})
         self.temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".csv")
         self.test_data.to_csv(self.temp_file.name, index=False, encoding="utf-8")
@@ -41,7 +48,7 @@ class TestProcessFile(unittest.TestCase):
 
     def test_process_file_success(self):
         """Prueba que el archivo es procesado correctamente."""
-        message, output_file = process_file(self.temp_file)
+        message, output_file = self.processor.process_file(self.temp_file)
         self.assertEqual(message, "Archivo procesado exitosamente.")
         self.assertIsNotNone(output_file)
 
@@ -56,8 +63,8 @@ class TestProcessFile(unittest.TestCase):
         invalid_file = tempfile.NamedTemporaryFile(delete=False, suffix=".csv")
         invalid_data.to_csv(invalid_file.name, index=False, encoding="utf-8")
 
-        message, output_file = process_file(invalid_file)
-        self.assertEqual(message, "Error: El archivo no tiene una columna llamada 'texto'.")
+        message, output_file = self.processor.process_file(invalid_file)
+        self.assertEqual(message, "Error: El archivo no tiene una columna llamada 'daño'.")
         self.assertIsNone(output_file)
 
         invalid_file.close()
