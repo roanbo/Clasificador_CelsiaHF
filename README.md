@@ -10,7 +10,7 @@
  
 Este proyecto tiene como objetivo desarrollar un modelo de inteligencia artificial para gestionar y categorizar reportes de fallas en las redes eléctricas de manera eficiente. Utilizando la metodología Scrum, se garantiza un enfoque ágil para el desarrollo del modelo, priorizando la colaboración, la adaptabilidad y la mejora continua. Se espera que el sistema automatice procesos, reduzca costos operativos y mejore la calidad del servicio 
 
-# Ejecicion Usuario Final
+# Ejecucion Usuario Final
 
 El proyecto esta desplegado en un AKS (Azure Kubernetes) el cual se puede ejecutar desde la siguiente IP Pública:
 
@@ -61,11 +61,11 @@ en la consola mostrara un link a las siguiente IP 127.0.0.1:7860, al dar clic le
  
 # Librerías
  
-pandas
-scikit-learn
-torch
-transformers
-gradio
+pandas |
+scikit-learn |
+torch |
+transformers |
+gradio |
 chardet 
  
  
